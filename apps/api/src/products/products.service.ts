@@ -1,11 +1,20 @@
 import { Injectable } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service.js';
 
 @Injectable()
 export class ProductsService {
-  findAll() {
-    return [
-      { id: 1, name: 'Tasse en céramique', price: 32 },
-      { id: 2, name: 'Sac en lin', price: 45 },
-    ];
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async findAll() {
+    const result = await this.databaseService.query(`
+      SELECT
+        id,
+        name,
+        price::float8 AS price
+      FROM products
+      ORDER BY id;
+    `);
+
+    return result.rows;
   }
 }
